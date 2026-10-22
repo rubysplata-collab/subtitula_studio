@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Subtitula Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800;900&family=Playfair+Display:ital,wght@1,500;1,600&display=swap">
 <style>
 :root{--bg:#0e0b14;--p:#17121f;--p2:#1e1829;--b:#2a2238;--a:#8b5cf6;--a2:#a78bfa;--t:#ece8f5;--m:#9a90b0;--ok:#4ade80;--er:#f87171}
 *{box-sizing:border-box}[hidden]{display:none!important}
@@ -70,7 +71,8 @@ small{color:var(--m);display:block;margin-top:8px;font-size:12px}
   <div class="msg" id="mv"></div>
  </section>
  <section class="pn"><h2><svg><use href="#i-dl"/></svg>Exportar video con subtítulos incrustados</h2>
-  <div class="bar"><button class="pri" id="exp"><svg><use href="#i-play"/></svg>Exportar video</button>
+  <label for="res" style="margin-top:0">Calidad de exportación</label><select id="res" style="max-width:260px"><option value="3840">Original (hasta 4K)</option><option value="1920" selected>Hasta 1080p</option><option value="1280">Hasta 720p</option></select>
+  <div class="bar" style="margin-top:12px"><button class="pri" id="exp"><svg><use href="#i-play"/></svg>Exportar video</button>
   <button id="cancel" hidden><svg><use href="#i-stop"/></svg>Cancelar</button>
   <a class="btn" id="dl" hidden><svg><use href="#i-dl"/></svg><span>Descargar MP4</span></a></div>
   <div class="pr" id="pe" hidden><div><i></i></div><b></b></div><div class="msg" id="mexp"></div>
@@ -88,22 +90,23 @@ small{color:var(--m);display:block;margin-top:8px;font-size:12px}
   <div class="pr" id="pg" hidden><div><i></i></div><b></b></div><div class="msg" id="mgen"></div>
  </section>
  <section class="pn"><h2><svg><use href="#i-cc"/></svg>Editor de subtítulos</h2>
-  <div class="bar" style="margin:0"><button id="add"><svg><use href="#i-plus"/></svg>Añadir en este instante</button><button id="srt"><svg><use href="#i-dl"/></svg>Guardar .srt</button><button id="clr"><svg><use href="#i-trash"/></svg>Borrar todos</button></div>
+  <div class="bar" style="margin:0"><button id="add"><svg><use href="#i-plus"/></svg>Añadir en este instante</button><button id="srt"><svg><use href="#i-dl"/></svg>Guardar .srt</button><button id="imp"><svg><use href="#i-up"/></svg>Importar .srt</button><input id="srtin" type="file" accept=".srt" hidden><button id="clr"><svg><use href="#i-trash"/></svg>Borrar todos</button></div>
+  <div class="bar" style="margin-top:10px"><select id="tl" style="width:auto"><option value="English">Inglés</option><option value="Spanish">Español</option><option value="Portuguese">Portugués</option><option value="French">Francés</option><option value="German">Alemán</option><option value="Italian">Italiano</option><option value="Japanese">Japonés</option><option value="Chinese">Chino</option></select><button id="tr"><svg><use href="#i-wand"/></svg>Traducir con Gemini</button></div>
   <div id="list"></div><small>Los tiempos están en segundos. Rodea con *asteriscos* las palabras que quieras resaltar en color.</small>
  </section>
  <section class="pn"><h2>Estilo de los subtítulos</h2>
   <div class="r2"><div><label for="mode">Tipografía</label><select id="mode"><option value="kin">Cinética (palabras clave en cursiva y color)</option><option value="cls">Clásica (caja negra)</option></select></div><div><label>Colores de palabras clave</label><button id="hlc" style="width:100%">Sortear colores nuevos</button></div><div><label>Tamaño (<span id="vs">5</span>% del alto)</label><input type="range" min="2" max="12" step=".5" value="5" data-s="size"></div>
-  <div><label for="font">Fuente</label><select id="font" data-s="font"><option>Arial Black</option><option>Arial</option><option>Segoe UI</option><option>Verdana</option><option>Tahoma</option><option>Georgia</option><option>Impact</option><option>Courier New</option></select></div>
+  <div><label for="font">Fuente</label><select id="font" data-s="font"><option>Montserrat</option><option>Arial Black</option><option>Arial</option><option>Segoe UI</option><option>Verdana</option><option>Tahoma</option><option>Georgia</option><option>Impact</option><option>Courier New</option></select></div>
   <div><label>Color del texto</label><input type="color" value="#ffffff" data-s="color"></div>
   <div><label>Color del fondo</label><input type="color" value="#000000" data-s="bg"></div>
   <div><label>Opacidad del fondo (<span id="vo">65</span>%)</label><input type="range" min="0" max="100" value="65" data-s="op"></div>
-  <div><label>Posición desde abajo (<span id="vp">8</span>%)</label><input type="range" min="2" max="45" value="8" data-s="pos"></div></div>
+  <div><label>Posición desde abajo (<span id="vp">8</span>%)</label><input type="range" min="2" max="45" value="8" data-s="pos"></div><div><label>Color de palabras clave</label><label style="display:flex;gap:6px;align-items:center;margin:0 0 6px"><input type="checkbox" data-s="fix">Usar un solo color</label><input type="color" value="#22d3c5" data-s="hcol"></div><div><label style="display:flex;gap:6px;align-items:center"><input type="checkbox" data-s="up">Mayúsculas</label><label style="display:flex;gap:6px;align-items:center"><input type="checkbox" data-s="ol">Contorno negro</label><label style="display:flex;gap:6px;align-items:center"><input type="checkbox" data-s="rv">Palabra por palabra</label></div></div>
  </section>
 </div>
 </main>
 <script>
 const $=s=>document.querySelector(s),v=$('#v'),cv=$('#cv'),cx=cv.getContext('2d');
-const S={subs:[],file:null,url:null,dlUrl:null,cancel:null,st:{mode:'kin',size:8,font:'Arial Black',color:'#ffffff',bg:'#000000',op:0,pos:22,seed:0}};
+const S={subs:[],file:null,url:null,dlUrl:null,cancel:null,st:{mode:'kin',size:8,font:'Montserrat',color:'#ffffff',bg:'#000000',op:0,pos:22,seed:0,up:false,ol:false,rv:false,fix:false,hcol:'#22d3c5'}};
 const msg=(id,t,k)=>{const e=$(id);e.textContent=t;e.className='msg '+(k||'')};
 const prog=(id,p,l)=>{$(id).hidden=p==null;if(p!=null){$(id+' i').style.width=p+'%';$(id+' b').textContent=l||''}};
 const ft=t=>{t=Math.max(0,t);const m=Math.floor(t/60);return String(m).padStart(2,'0')+':'+(t-m*60).toFixed(1).padStart(4,'0')};
@@ -112,28 +115,30 @@ const cur=t=>S.subs.find(x=>t>=x.s&&t<x.e);
 /* ---------- Dibujo de subtítulos (mismo código para vista previa y exportación) ---------- */
 const PAL=['#22d3c5','#facc15','#f472b6','#a78bfa','#fb923c','#4ade80','#38bdf8','#f87171'];
 function parseCap(t){const o=[];let on=false;t.split(/\s+/).filter(Boolean).forEach(x=>{if(x[0]=='*')on=true;const w=x.replace(/\*/g,'');if(w)o.push({w,h:on});if(x.length>1&&x.endsWith('*'))on=false});return o}
-function drawCap(c,W,H,text,st){
- if(!text)return;const ws=parseCap(text);if(!ws.length)return;
+function drawCap(c,W,H,text,st,age,dur){
+ if(!text)return;const ws=parseCap(st.up?text.toUpperCase():text);if(!ws.length)return;
  const kin=st.mode=='kin',fs=H*st.size/100;
- const fb=kin?`900 ${fs}px "${st.font}",Impact,Arial,sans-serif`:`bold ${fs}px "${st.font}",Arial,sans-serif`,fh=`italic ${fs*1.3}px Georgia,"Times New Roman",serif`;
+ const fb=kin?`900 ${fs}px "${st.font}",Impact,Arial,sans-serif`:`bold ${fs}px "${st.font}",Arial,sans-serif`,fh=`italic 500 ${fs*1.3}px "Playfair Display",Georgia,"Times New Roman",serif`;
  const hash=s=>[...s].reduce((a,ch)=>(a*31+ch.charCodeAt(0))>>>0,7);
  c.textAlign='left';c.textBaseline='middle';
- ws.forEach((x,i)=>{x.f=x.h&&kin?fh:fb;c.font=x.f;x.m=c.measureText(x.w).width;x.c=x.h?PAL[hash(x.w+i+st.seed)%PAL.length]:st.color});
+ ws.forEach((x,i)=>{x.f=x.h&&kin?fh:fb;c.font=x.f;x.m=c.measureText(x.w).width;x.i=i;x.c=x.h?(st.fix?st.hcol:PAL[hash(x.w+i+st.seed)%PAL.length]):st.color});
  c.font=fb;const sp=c.measureText(' ').width*(kin?.8:1),maxW=W*(kin?.9:.88),L=[];let cu=[],cw=0;
  const flush=()=>{if(cu.length)L.push({a:cu,w:cw});cu=[];cw=0};
  ws.forEach(x=>{if(cu.length&&((kin&&(x.h||cu[cu.length-1].h))||cw+sp+x.m>maxW))flush();cw+=(cu.length?sp:0)+x.m;cu.push(x)});flush();
  const hs=L.map(l=>fs*(kin?(l.a.some(x=>x.h)?1.4:1.1):1.3)),[r,g,b]=[1,3,5].map(i=>parseInt(st.bg.substr(i,2),16));
- let y=H-H*st.pos/100-hs.reduce((a,q)=>a+q,0);
+ const tot=hs.reduce((a,q)=>a+q,0);let y=H-H*st.pos/100-tot;const dl=dur?Math.min(.3,dur*.7/ws.length):0,vis=st.rv&&age!=null&&dl?Math.floor(Math.max(0,age)/dl)+1:99;
+ c.save();
+ if(kin&&!st.rv&&age!=null&&age<.22){const q=Math.max(0,age)/.22,e=1-Math.pow(1-q,3),yc=y+tot/2;c.globalAlpha=q;c.translate(W/2,yc);c.scale(.82+.18*e,.82+.18*e);c.translate(-W/2,-yc)}
  if(kin){c.shadowColor='rgba(0,0,0,.5)';c.shadowBlur=fs*.18;c.shadowOffsetY=fs*.04}
  L.forEach((l,i)=>{const h=hs[i],cy=y+h/2;let x0=W/2-l.w/2;
   if(!kin){const pw=l.w+fs*.9;c.fillStyle=`rgba(${r},${g},${b},${st.op/100})`;c.beginPath();if(c.roundRect)c.roundRect(W/2-pw/2,y,pw,h,fs*.18);else c.rect(W/2-pw/2,y,pw,h);c.fill()}
-  l.a.forEach(x=>{c.font=x.f;c.fillStyle=x.c;c.fillText(x.w,x0,cy+fs*.04);x0+=x.m+sp});y+=h});
- c.shadowColor='transparent';c.shadowBlur=0;c.shadowOffsetY=0;
+  l.a.forEach(x=>{if(x.i<vis){c.font=x.f;if(st.ol){c.lineWidth=fs*.16;c.lineJoin='round';c.strokeStyle='#000';c.strokeText(x.w,x0,cy+fs*.04)}c.fillStyle=x.c;c.fillText(x.w,x0,cy+fs*.04)}x0+=x.m+sp});y+=h});
+ c.restore();
 }
 let lastAct=-2;
 function render(){
  cx.clearRect(0,0,cv.width,cv.height);const s=cur(v.currentTime);
- drawCap(cx,cv.width,cv.height,s&&s.t,S.st);
+ drawCap(cx,cv.width,cv.height,s&&s.t,S.st,s&&v.currentTime-s.s,s&&s.e-s.s);
  const i=s?S.subs.indexOf(s):-1;
  if(i!==lastAct){lastAct=i;document.querySelectorAll('#list .row').forEach(r=>r.classList.toggle('act',+r.dataset.i===i))}
 }
@@ -142,7 +147,7 @@ addEventListener('resize',()=>!$('#stage').hidden&&sizeCv());
 v.onplay=()=>{(function l(){render();if(!v.paused)requestAnimationFrame(l)})()};
 v.ontimeupdate=v.onseeked=render;
 document.querySelectorAll('[data-s]').forEach(el=>el.addEventListener('input',()=>{
- const k=el.dataset.s;S.st[k]=el.type=='range'?+el.value:el.value;
+ const k=el.dataset.s;S.st[k]=el.type=='range'?+el.value:el.type=='checkbox'?el.checked:el.value;
  const lab={size:'#vs',op:'#vo',pos:'#vp'}[k];if(lab)$(lab).textContent=el.value;render()}));
 
 /* ---------- Cargar video ---------- */
@@ -275,16 +280,16 @@ $('#exp').onclick=async()=>{
  msg('#mexp','Exportando en tiempo real. Mantén esta pestaña visible…');prog('#pe',0,'0%');
  let ac,st,timer,ev=document.createElement('video'),cancelled=false;
  try{
-  ev.src=S.url;ev.playsInline=true;ev.preload='auto';
+  await loadFonts();ev.src=S.url;ev.playsInline=true;ev.preload='auto';
   await new Promise((ok,ko)=>{ev.onloadedmetadata=ok;ev.onerror=()=>ko(Error('No se pudo abrir el video para exportar.'))});
-  const k=Math.min(1,1920/Math.max(ev.videoWidth,ev.videoHeight)),W=Math.round(ev.videoWidth*k)&~1,H=Math.round(ev.videoHeight*k)&~1;
+  const k=Math.min(1,+$('#res').value/Math.max(ev.videoWidth,ev.videoHeight)),W=Math.round(ev.videoWidth*k)&~1,H=Math.round(ev.videoHeight*k)&~1;
   const c=document.createElement('canvas');c.width=W;c.height=H;const g=c.getContext('2d');
   ac=new AudioContext();const dst=ac.createMediaStreamDestination();ac.createMediaElementSource(ev).connect(dst);await ac.resume();
   st=c.captureStream(30);dst.stream.getAudioTracks().forEach(t=>st.addTrack(t));
   const rec=new MediaRecorder(st,{mimeType:mime,videoBitsPerSecond:Math.min(12e6,Math.max(3e6,W*H*5)),audioBitsPerSecond:192e3}),parts=[];
   rec.ondataavailable=e=>e.data.size&&parts.push(e.data);
   const stopped=new Promise(r=>rec.onstop=r),finished=new Promise(r=>{ev.onended=r;S.cancel=()=>{cancelled=true;r()}});
-  const draw=()=>{g.drawImage(ev,0,0,W,H);const s=cur(ev.currentTime);drawCap(g,W,H,s&&s.t,S.st);
+  const draw=()=>{g.drawImage(ev,0,0,W,H);const s=cur(ev.currentTime);drawCap(g,W,H,s&&s.t,S.st,s&&ev.currentTime-s.s,s&&s.e-s.s);
    const p=Math.min(100,100*ev.currentTime/ev.duration);prog('#pe',p,`${ft(ev.currentTime)} de ${ft(ev.duration)} (${Math.round(p)}%)`)};
   draw();rec.start(500);await ev.play();timer=setInterval(draw,1000/30);
   await finished;clearInterval(timer);if(!cancelled)draw();
@@ -300,10 +305,28 @@ $('#exp').onclick=async()=>{
  finally{clearInterval(timer);S.cancel=null;try{ev.pause();ev.removeAttribute('src');ev.load()}catch(e){}
   st&&st.getTracks().forEach(t=>t.stop());ac&&ac.close().catch(()=>{});$('#exp').disabled=false;$('#cancel').hidden=true}
 };
-const MODES={kin:{size:8,font:'Arial Black',op:0,pos:22},cls:{size:5,font:'Arial',op:65,pos:8}};
+$('#imp').onclick=()=>$('#srtin').click();
+$('#srtin').onchange=async e=>{const f=e.target.files[0];if(!f)return;const o=[];
+ (await f.text()).split(/\r?\n\s*\r?\n/).forEach(b=>{const l=b.trim().split(/\r?\n/),i=l.findIndex(x=>x.includes('-->'));if(i<0)return;
+  const m=l[i].match(/(\d+):(\d+):(\d+)[,.](\d+)\s*-->\s*(\d+):(\d+):(\d+)[,.](\d+)/);if(!m)return;
+  const T=(h,mi,se,ms)=>+h*3600+ +mi*60+ +se+ +ms/10**ms.length;o.push({s:T(...m.slice(1,5)),e:T(...m.slice(5,9)),t:l.slice(i+1).join(' ').replace(/<[^>]+>/g,'').trim()})});
+ e.target.value='';if(!o.length)return msg('#mgen','No se encontraron subtítulos en ese .srt.','err');
+ S.subs=o.sort((a,b)=>a.s-b.s);list();msg('#mgen',`Importados ${o.length} subtítulos desde el .srt.`,'ok')};
+$('#tr').onclick=async()=>{
+ if(!S.subs.length)return msg('#mgen','No hay subtítulos que traducir.','err');
+ const model=($('#model').value.trim()||'gemini-flash-latest').replace(/^models\//,''),sel=$('#tl');
+ $('#tr').disabled=true;msg('#mgen','Traduciendo…');
+ try{const d=await gem(`models/${model}:generateContent`,{method:'POST',body:JSON.stringify({contents:[{parts:[{text:`Translate these subtitles to ${sel.value}. Return a JSON array of strings with exactly ${S.subs.length} items, in the same order, with short natural phrasing. Keep single asterisks around the translated equivalent of each word wrapped in asterisks.\n`+JSON.stringify(S.subs.map(x=>x.t))}]}],generationConfig:{temperature:.2,responseMimeType:'application/json',responseSchema:{type:'ARRAY',items:{type:'STRING'}}}})});
+  const a=JSON.parse((d.candidates?.[0]?.content?.parts||[]).map(p=>p.text||'').join(''));
+  if(!Array.isArray(a)||a.length!=S.subs.length)throw Error('La traducción no coincide en cantidad de subtítulos. Vuelve a intentarlo.');
+  a.forEach((t,i)=>S.subs[i].t=String(t));list();msg('#mgen','Subtítulos traducidos a '+sel.selectedOptions[0].text+'.','ok')}
+ catch(e){msg('#mgen',e.message,'err')}finally{$('#tr').disabled=false}};
+const MODES={kin:{size:8,font:'Montserrat',op:0,pos:22},cls:{size:5,font:'Arial',op:65,pos:8}};
 function applyMode(m){S.st.mode=m;Object.assign(S.st,MODES[m]);document.querySelectorAll('[data-s]').forEach(el=>{if(el.dataset.s in MODES[m])el.value=S.st[el.dataset.s]});
  $('#vs').textContent=S.st.size;$('#vo').textContent=S.st.op;$('#vp').textContent=S.st.pos;render()}
 $('#mode').onchange=e=>applyMode(e.target.value);
 $('#hlc').onclick=()=>{S.st.seed++;render()};
+const loadFonts=()=>Promise.all(['900 40px "Montserrat"','italic 500 40px "Playfair Display"'].map(f=>document.fonts.load(f))).catch(()=>{});
+document.fonts.addEventListener('loadingdone',render);loadFonts();
 applyMode('kin');list();
 </script></body></html>
