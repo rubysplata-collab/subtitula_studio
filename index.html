@@ -200,19 +200,25 @@ $('#srt').onclick=()=>{if(!S.subs.length)return msg('#mgen','No hay subtítulos 
 /* ---------- Gemini ---------- */
 try{const k=localStorage.getItem('subtitula_key');if(k){$('#key').value=k;$('#rem').checked=true}}catch(e){}
 const API='https://generativelanguage.googleapis.com/v1beta/';
-async function gem(path,opt){
+async function gem1(path,opt){
  const key=$('#key').value.trim();if(!key)throw Error('Introduce tu clave API de Gemini.');
  try{$('#rem').checked?localStorage.setItem('subtitula_key',key):localStorage.removeItem('subtitula_key')}catch(e){}
  for(let n=0;;n++){
   const r=await fetch(API+path,{...opt,headers:{'Content-Type':'application/json','x-goog-api-key':key}});
   if(r.ok)return r.json();
-  if((r.status==429||r.status==503)&&n<3){await new Promise(z=>setTimeout(z,2500*(n+1)));continue}
   let m='';try{m=(await r.json()).error.message}catch(e){}
-  throw Error(`Gemini respondió ${r.status}: ${m||r.statusText}`)}
+  if((r.status==503||(r.status==429&&!/quota/i.test(m)))&&n<3){await new Promise(z=>setTimeout(z,3000*(n+1)));continue}
+  throw Object.assign(Error(`Gemini respondió ${r.status}: ${m||r.statusText}`+(/limit: 0/.test(m)?' → Tu clave no tiene cuota gratuita para ese modelo. Usa un modelo "flash" (por ejemplo gemini-2.5-flash).':'')),{status:r.status})}
 }
+async function gem(path,opt){
+ const mm=path.match(/^models\/([^:]+):generateContent$/);if(!mm)return gem1(path,opt);
+ const c=[...new Set([mm[1],'gemini-flash-latest','gemini-2.5-flash','gemini-flash-lite-latest','gemini-2.5-flash-lite'])];let err;
+ for(const m of c){try{const d=await gem1(`models/${m}:generateContent`,opt);if(m!=mm[1]){$('#model').value=m;msg('#mgen',`Se usó ${m} porque ${mm[1]} no estaba disponible.`)}return d}
+  catch(e){err=e;if(![429,503,404].includes(e.status))throw e}}
+ throw err}
 $('#lm').onclick=async()=>{
  try{msg('#mgen','Consultando modelos…');const d=await gem('models?pageSize=200');
-  const n=(d.models||[]).filter(m=>(m.supportedGenerationMethods||[]).includes('generateContent')&&/gemini/.test(m.name)).map(m=>m.name.replace('models/',''));
+  const n=(d.models||[]).filter(m=>(m.supportedGenerationMethods||[]).includes('generateContent')&&/gemini/.test(m.name)&&!/computer-use|tts|image|embedding|live|audio|robotics|imagen|veo/i.test(m.name)).map(m=>m.name.replace('models/',''));
   $('#models').innerHTML=n.map(x=>`<option value="${x}">`).join('');
   msg('#mgen',`${n.length} modelos disponibles. Haz doble clic en el campo Modelo para verlos.`,'ok')}
  catch(e){msg('#mgen',e.message,'err')}};
